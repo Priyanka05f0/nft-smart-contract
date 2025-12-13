@@ -1,0 +1,15 @@
+{
+  "name": "nft-smart-contract",
+  "version": "1.0.0",
+  "description": "NFT Smart Contract",
+  "main": "hardhat.config.js",
+  "scripts": {
+    "test": "npx hardhat test"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "hardhat": "^2.22.1",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "chai": "^4.3.10"
+  }
+}

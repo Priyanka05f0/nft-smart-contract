@@ -1,28 +1,31 @@
-\# NFT Smart Contract
+# NFT Smart Contract
 
+This project implements an ERC-721 compliant NFT smart contract using Hardhat and OpenZeppelin.
 
+## Features
+- ERC-721 standard implementation
+- Admin-controlled minting
+- Pause and unpause minting
+- Token transfers and approvals
+- Metadata support
+- Unit tests using Hardhat
 
-This project implements an ERC-721 compatible NFT smart contract
+## Tech Stack
+- Solidity
+- Hardhat
+- OpenZeppelin Contracts
+- Node.js
 
-with automated tests and Docker support.
+## How to Run Tests
 
+```bash
+npm install
+npx hardhat test
+```
+## Project Structure
 
-
-\## Tech Stack
-
-\- Solidity
-
-\- Hardhat
-
-\- Node.js
-
-\- Docker
-
-
-
-\## How to Run
-
-Docker will be used to build and run the test suite.
-
-
-
+- contracts/ - Solidity smart contracts
+- test/ - Test cases
+- hardhat.config.js - Hardhat configuration
+- Dockerfile - Docker setup for evaluation
+---

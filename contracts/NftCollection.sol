@@ -1,96 +1,60 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
-// Contract should implement ERC-721-compatible interface for NFTs
-// It must track ownership, balances, approvals, and support safe transfers
-contract NftCollection {
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-    // State variables:
-    // string public name;
-    // string public symbol;
-    // uint256 public maxSupply;
-    // uint256 public totalSupply;
+contract NftCollection is ERC721, Ownable {
 
-    // Mappings:
-    // tokenId => owner address
-    // owner address => balance
-    // tokenId => approved address
-    // owner => operator approvals
+    bool private _paused;
+    uint256 private _tokenIdCounter;
+    string private _baseTokenURI;
 
-    // =========================
-    // Access control
-    // =========================
-
-    address private _admin;
-
-    modifier onlyAdmin() {
-        require(msg.sender == _admin, "Not admin");
-        _;
+    constructor() ERC721("NftCollection", "NFTC") Ownable(msg.sender) {
+        _paused = false;
+        _tokenIdCounter = 0;
     }
 
     // =========================
-    // Pause state
+    // Pause control
     // =========================
 
-    bool private _paused;
-
-    function pauseMinting() external onlyAdmin {
+    function pauseMinting() external onlyOwner {
         _paused = true;
     }
 
-    function unpauseMinting() external onlyAdmin {
+    function unpauseMinting() external onlyOwner {
         _paused = false;
+    }
+
+    // =========================
+    // Minting
+    // =========================
+
+    function mint(address to) external onlyOwner {
+        require(!_paused, "Minting paused");
+        require(to != address(0), "Zero address");
+
+        uint256 tokenId = _tokenIdCounter;
+        _tokenIdCounter++;
+
+        _safeMint(to, tokenId);
     }
 
     // =========================
     // Metadata
     // =========================
 
-    // Base URI for token metadata
-    string private _baseTokenURI;
-
-    // =========================
-    // CONSTRUCTOR (IMPORTANT)
-    // =========================
-
-    constructor() {
-        _admin = msg.sender;   // deployer becomes admin
-        _paused = false;       // minting unpaused by default
+    function _baseURI() internal view override returns (string memory) {
+        return _baseTokenURI;
     }
 
-    // =========================
-    // Optional metadata
-    // =========================
-
-    function tokenURI(uint256 tokenId) public view returns (string memory) {
-        require(tokenId > 0, "Token does not exist");
-
-        return string(
-            abi.encodePacked(_baseTokenURI, _uintToString(tokenId))
-        );
+    function setBaseURI(string calldata baseURI_) external onlyOwner {
+        _baseTokenURI = baseURI_;
     }
 
-    function _uintToString(uint256 value) internal pure returns (string memory) {
-        if (value == 0) {
-            return "0";
-        }
-
-        uint256 temp = value;
-        uint256 digits;
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
-        }
-
-        bytes memory buffer = new bytes(digits);
-        while (value != 0) {
-            digits -= 1;
-            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
-            value /= 10;
-        }
-
-        return string(buffer);
+    // ❗ NO _exists CHECK NEEDED IN OZ v5
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        return super.tokenURI(tokenId);
     }
-
-    // Internal helper functions for minting, transferring, approvals
 }

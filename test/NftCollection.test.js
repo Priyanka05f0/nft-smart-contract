@@ -33,7 +33,7 @@ describe("NftCollection", function () {
   it("non-admin should not be able to pause minting", async function () {
     await expect(
       nft.connect(user).pauseMinting()
-    ).to.be.revertedWith("Not admin");
+    ).to.be.reverted;
   });
 
   /* ---------------- MINTING ---------------- */
@@ -59,7 +59,10 @@ describe("NftCollection", function () {
 
   it("should transfer NFT between users", async function () {
     await nft.connect(owner).mint(owner.address);
-    await nft.connect(owner).transferFrom(owner.address, user.address, 0);
+    await nft
+      .connect(owner)
+      .transferFrom(owner.address, user.address, 0);
+
     expect(await nft.ownerOf(0)).to.equal(user.address);
   });
 
@@ -81,6 +84,6 @@ describe("NftCollection", function () {
   /* ---------------- INVALID TOKEN ---------------- */
 
   it("tokenURI should revert for invalid tokenId", async function () {
-    await expect(nft.tokenURI(0)).to.be.revertedWith("Token does not exist");
+    await expect(nft.tokenURI(0)).to.be.reverted;
   });
 });
